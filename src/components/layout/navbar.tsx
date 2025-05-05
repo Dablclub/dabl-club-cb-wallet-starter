@@ -16,7 +16,7 @@ export type MenuItemType = {
 
 const MENU_ITEMS: MenuItemType[] = [
   {
-    displayText: 'bounties',
+    displayText: 'challenges',
     href: 'https://dabl.club',
     isExternal: true,
     isMobileOnly: false,

@@ -1,7 +1,5 @@
-import { http, createPublicClient, parseEther, isAddress } from 'viem'
-import { baseSepolia } from 'viem/chains'
+import { isAddress } from 'viem'
 import { NextRequest, NextResponse } from 'next/server'
-import cdp from '@/server/clients/cdp'
 
 export async function POST(request: NextRequest) {
   const searchParams = new URL(request.url).searchParams
@@ -24,54 +22,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const publicClient = createPublicClient({
-      chain: baseSepolia,
-      transport: http(),
-    })
+    // TODO: Implement transaction sending
 
-    // Step 2: Request ETH from the faucet.
-    const { transactionHash: faucetTransactionHash } =
-      await cdp.evm.requestFaucet({
-        address: fromAddress,
-        network: 'base-sepolia',
-        token: 'eth',
-      })
-
-    // Safety check to ensure the transaction was successful
-    await publicClient.waitForTransactionReceipt({
-      hash: faucetTransactionHash,
-    })
-
-    console.log(
-      `Received ETH from faucet: https://sepolia.basescan.org/tx/${faucetTransactionHash}`,
-    )
-
-    const { transactionHash } = await cdp.evm.sendTransaction({
-      address: fromAddress,
-      network: 'base-sepolia',
-      transaction: {
-        to: toAddress,
-        value: parseEther(amount),
+    return NextResponse.json(
+      {
+        transactionHash: '0x0000000000000000000000000000000000000000',
+        amount,
       },
-    })
-
-    console.log(transactionHash)
-
-    // Step 4: Wait for the transaction to be confirmed
-    await publicClient.waitForTransactionReceipt({
-      hash: transactionHash,
-    })
-
-    console.log(
-      `Transaction explorer link: https://sepolia.basescan.org/tx/${transactionHash}`,
+      { status: 200 },
     )
-
-    return NextResponse.json({ transactionHash }, { status: 200 })
   } catch (error) {
     console.error(error)
-    return NextResponse.json(
-      { error: 'Failed to send transaction' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: String(error) }, { status: 500 })
   }
 }

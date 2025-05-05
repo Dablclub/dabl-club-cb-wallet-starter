@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server'
-import cdp from '@/server/clients/cdp'
 
 export async function POST() {
-  const account = await cdp.evm.createAccount()
-  console.log(`Created EVM account: ${account.address}`)
-
-  return NextResponse.json({ account }, { status: 200 })
+  try {
+    // TODO: Implement account creation
+    return NextResponse.json(
+      { account: '0x0000000000000000000000000000000000000000' },
+      { status: 200 },
+    )
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: String(error) }, { status: 500 })
+  }
 }
